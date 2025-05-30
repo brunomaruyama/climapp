@@ -1,20 +1,61 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import citiesData from "../assets/data/cities.json"; // Assuming you have a JSON file with city data
 
 const Cities = () => {
-  console.log(citiesData);
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [filteredCities, setFilteredCities] = useState(citiesData);
 
+  useEffect(() => {
+    // This effect can be used to filter cities based on the search input
+    // For now, it just logs the search term
+    console.log("Searching for:", search);
+
+    const newFilteredCities = citiesData.filter((city) =>
+      city.city.toLocaleLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredCities(newFilteredCities);
+  }, [search]);
   return (
-    <LinearGradient colors={["#00457d", "#05051f"]}>
+    <LinearGradient colors={["#00457d", "#05051f"]} style={{ flex: 1 }}>
       <ScrollView>
         <View style={styles.container}>
-          {citiesData.map((city, index) => (
-            <View key={index} style={styles.citiesContainer}>
+          <View style={styles.searchInput}>
+            <TextInput
+              placeholder="Digite a cidade"
+              style={styles.textInput}
+              placeholderTextColor={"#fff"}
+              value={search}
+              onChangeText={(value) => setSearch(value)}
+            />
+            <MaterialIcons name="search" size={24} color={"#fff"} />
+          </View>
+          {filteredCities.map((city) => (
+            <TouchableOpacity
+              onPress={() => {
+                router.push(`/${city.city}`);
+              }}
+              key={city.city}
+              style={styles.citiesContainer}
+            >
               <Image source={require("../assets/images/clouds.png")}></Image>
-              <Text style={styles.citiesName}>{city.city}</Text>
+              <Text style={styles.citiesName}>
+                {city.city.replace(",", " - ")}
+              </Text>
               <Text style={styles.cityTemp}>{city.temp}°</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
@@ -29,6 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 16,
     paddingHorizontal: 16,
+    paddingTop: 40,
   },
   citiesName: {
     color: "#fff",
@@ -49,6 +91,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 24,
     fontFamily: "Montserrat_700Bold",
+  },
+  searchInput: {
+    width: "100%",
+    height: 42,
+    backgroundColor: "#ffffff15",
+    borderRadius: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+  textInput: {
+    color: "#fff",
+    fontFamily: "Montserrat_500Medium",
+    fontSize: 16,
   },
 });
 
