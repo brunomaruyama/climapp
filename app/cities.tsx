@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
+    marginBottom: 40,
   },
   textInput: {
     color: "#fff",

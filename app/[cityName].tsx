@@ -1,8 +1,8 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Forecast = {
   min: string;
@@ -19,6 +19,8 @@ type City = {
 };
 
 const CityDetails = () => {
+  const router = useRouter();
+
   const searchParams = useLocalSearchParams();
   const [cityDetails, setCityDetails] = useState<City | null>(null);
   const handleData = async () => {
@@ -38,15 +40,26 @@ const CityDetails = () => {
     handleData();
   }, []);
 
+  if (!cityDetails) {
+    return (
+      <LinearGradient
+        colors={["#00457d", "#05051f"]}
+        style={styles.container}
+      />
+    );
+  }
+
   return (
     <LinearGradient colors={["#00457d", "#05051f"]} style={styles.container}>
       <View>
-        <MaterialIcons
-          name="chevron-left"
-          size={24}
-          color={"#fff"}
+        <TouchableOpacity
+          onPress={() => {
+            router.back();
+          }}
           style={styles.headerIcon}
-        />
+        >
+          <MaterialIcons name="chevron-left" size={24} color={"#fff"} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>
           {cityDetails ? cityDetails.city : "Carregando..."}
         </Text>
@@ -126,6 +139,7 @@ const styles = StyleSheet.create({
   headerIcon: {
     position: "absolute",
     left: 16,
+    zIndex: 10,
   },
   cardImage: {
     width: 72,
